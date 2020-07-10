@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewData["Title"] = "AddPeople";
+}
+
+@model Classroom.ViewModel.AddPeopleViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> userManager
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    .People{
+        width:90%;
+        display:flex;
+    }
+</style>
+@if (Model.Users.Count() > 0)
+{
+<div class="People">
+    <div id="Teacher">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <td>Email</td>
+                    <td>Role</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Users)
+
+                {
+                    var role = await userManager.GetRolesAsync(item);
+                    if (role[0] != "Administrator")
+                    {
+                    <tr>
+                        <td>@item.Email</td>
+                        <td>@role[0]</td>
+                        <td><input type="checkbox" data-id="@item.Id" /></td>
+                    </tr>
+                    }
+                }
+                </tbody>
+        </table>
+        <button id="add" class="btn btn-primary">Add</button>
+        
+    </div>
+   
+</div>
+}
+@section scripts
+{
+<script>
+    $(document).ready(function () {
+        $("#add").click(function () {
+            var id=$("input[type=checkbox]:cheched")
+        })
+    })
+</script>
+}
+
+

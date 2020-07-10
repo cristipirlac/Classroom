@@ -1,0 +1,106 @@
+﻿@model Classroom.ViewModel.AssignmentViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .announcment{
+        border:2px black solid;
+        border-radius:10px;
+        margin:10px 0px;
+    }
+    .announcment:hover{
+        background-color:aquamarine;
+    }
+    #teacherAssignment{
+        box-shadow: 2px 2px 2px #000;
+    }
+</style>
+@{ 
+    var user = await userManager.GetUserAsync(User);
+    if (await userManager.IsInRoleAsync(user, "Teacher"))
+    {
+        <div id="teacherAssignment">
+            <form asp-action="Index" method="post">
+                <div id="assignment">
+                    @Html.RadioButtonFor(model => model.Type, "course", new { @class = "radioButton" })Add  a course
+                    @Html.RadioButtonFor(model => model.Type, "announcment", new { @class = "radioButton" })Add  an Announcment
+                    @Html.RadioButtonFor(model => model.Type, "assignment", new { @class = "radioButton" })Add  an Assignment <hr />
+                    <input asp-for="@Model.Classroom.Id" hidden />
+                    <div class="form-group" id="announcmentForm" style="display:none">
+                        <textarea asp-for="@Model.Description" placeholder="Put your description  here"></textarea>
+
+                    </div>
+                    <div class="form-group" id="courseForm" style="display:none">
+                        <input asp-for="@Model.Link" placeholder="Put the assignment link  here" />
+                    </div>
+                    <div class="form-group" id="assignmentForm" style="display:none">
+                        <input type="date" asp-for="@Model.DueTo" />
+                    </div>
+                    <button type="submit" id="btn" style="display:none">Add</button>
+                </div>
+                
+            </form>
+        </div>
+    }
+    @foreach (var item in Model.Assignments)
+    {
+        if (item.Type == "course")
+        {
+            <div class="announcment" onclick="location.href=`@Url.Action("Assignment", "Assignment", new { id = item.Id })`">
+                <p>@item.Description</p>
+                <p>@item.Link</p>
+                <p>@item.Type</p>
+            </div>
+        }
+        else
+                    if (item.Type == "assignment")
+                    {
+                        <div class="announcment"onclick="location.href=`@Url.Action("Assignment", "Assignment", new { id = item.Id })`" >
+                            <p>@item.Description</p>
+            
+                        </div>
+                    }
+        else
+        {
+        <div class="announcment">
+            <p>@item.Description</p>
+            <p>@item.Type</p>
+
+        </div>
+        }
+    }
+ }
+
+@section scripts{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $("input[name='Type']").click(function () {
+            $("#btn").css("display", "block");
+            var type = $("input[name = 'Type']:checked").val();
+            console.log(type);
+            if (type == "course") {
+                $("#announcmentForm").css("display", "block");
+                $("#courseForm").css("display", "block");
+                $("#assignmentForm").css("display", "none");
+            }
+            else
+                if (type == "announcment") {
+                    $("#announcmentForm").css("display", "block");
+                    $("#courseForm").css("display", "none");
+                    $("#assignmentForm").css("display", "none");
+                }
+                else
+                    if (type == "assignment") {
+                        $("#announcmentForm").css("display", "block");
+                        $("#courseForm").css("display", "block");
+                        $("#assignmentForm").css("display", "block");
+                    }
+        })
+    </script>
+}
+

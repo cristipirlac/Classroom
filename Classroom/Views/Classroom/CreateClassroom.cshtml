@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewData["Title"] = "CreateClassroom";
+}
+
+<div class="form-group">
+    <label>Classroom Name</label>
+    <input id="name" />
+    <div id="nameError" class="alert alert-danger" role="alert" style="display:none">
+        <p>This field should be completed</p>
+    </div>
+</div>
+<div class="form-group">
+    <label>Classroom Code</label>
+    <input id="code" />
+    <button type="submit" id="codeGenerator" class="btn btn-outline-primary">Generate Code</button>
+    <div id="codeError" class="alert alert-danger" role="alert" style="display:none">
+        <p>This field should be completed</p>
+    </div>
+</div>
+<button class=" btn btn-outline-success" id="create">Create</button>
+
+@section scripts
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#codeGenerator").click(function () {
+                var result = '';
+                var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var charactersLength = characters.length;
+                for (var i = 0; i < 8; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                $("#code").val(result);
+            })
+            $("#create").click(function () {
+                var object = new Object();
+                object.Name=$("#name").val();
+                object.ClassCode = $("#code").val();
+                if (object.Name == '') {
+                    $("#nameError").css("display", "block");
+                }
+                else
+                    if (object.ClassCode == '') {
+                        $("#nameError").css("display", "none");
+                        $("#codeError").css("display", "block");
+                    }
+                    else {
+                        $("#nameError").css("display", "none");
+                        $("#codeError").css("display", "none");
+                        $.ajax({
+                            type: "POST",
+                            url: "/Classroom/CreateClassroom",
+                            data: object,
+                           
+                            success: function () {
+                                window.location.href = `@Url.Action("Index", "Home")`;
+                            },
+                            error: function () {
+                                console.log("Something went Wrong");
+                            }
+                        })
+                    }
+            })
+             
+
+        })
+    </script>
+}
+
